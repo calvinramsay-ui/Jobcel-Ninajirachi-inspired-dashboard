@@ -62,12 +62,22 @@ const weatherWords = {
 
 loadWeather();
 
-async function loadStock() {
-	const response = await fetch (`https://finnhub.io/api/v1/quote?symbol=AAPL&token=${FINNHUB_KEY}`);
-	const data = await response.json();
-console.log(data);
-const change = data.dp.toFixed(2);
-document.getElementById("stocks").textContent = `AAPL: ${change}%`; 
+const tickers = ["NVDA", "GOOGL", "UNH", "SPCX", "MSFT", "AAPL","QS","LVMUY","XOM","TTWO","PTGX"]
+
+async function loadStocks() {
+	const results = [];
+
+	for (const ticker of tickers) {
+	  const response = await fetch (`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_KEY}`);
+	  const data = await response.json();
+	  results.push({ticker: ticker, change: data.dp });
+}
+console.log(results);
+
+results.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+
+const lines = results.map(r => `${r.ticker}: ${r.change.toFixed(2)}%`);
+document.getElementById("stocks").innerHTML = lines.join("<br>");
 }
 
-loadStock();
+loadStocks();
