@@ -21,10 +21,11 @@ setInterval(updateCounter, 1000); // re-run every 1000 ms, so it ticks every sec
 
 
 async function loadGif() {
-	const response = await fetch("https:////nekos.best/api/v2/wave", {credentials: "include"});
+	const response = await fetch("https://nekos.best/api/v2/wave", {credentials: "include"});
 	const data = await response.json();
 	console.log(data);
 document.getElementById("gif").src = data.results[0].url;
+document.getElementById("anime-name").textContent = data.results[0].anime_name;
 }
 
 loadGif();
