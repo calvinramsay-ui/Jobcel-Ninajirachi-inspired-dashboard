@@ -27,5 +27,12 @@ async function loadGif() {
 document.getElementById("gif").src = data.results[0].url;
 document.getElementById("anime-name").textContent = data.results[0].anime_name;
 }
-
 loadGif();
+
+async function loadWeather() {
+	const response = await fetch ("https://api.open-meteo.com/v1/forecast?latitude=42.30&longitude=-71.06&current=temperature_2m,weather_code&temperature_unit=fahrenheit");
+	const data = await response.json();
+console.log(data);
+document.getElementById("weather").textContent = data.current.temperature_2m;
+}
+loadWeather();
