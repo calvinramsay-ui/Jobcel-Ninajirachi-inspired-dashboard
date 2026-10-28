@@ -6,7 +6,7 @@
     "newtab": "newtab.html"
   },
 "permissions": ["declarativeNetRequest"],
-"host_permissions": ["https://nekos.best/*,"https://api.open-meteo.com/*"],
+"host_permissions": ["https://nekos.best/*,"https://api.open-meteo.com/*,https://finnhub.io/*"],
 "declarative_net_request": {
 	"rule_resources": [
 { "id": "nekos_rules", "enabled": true, "path": "rules.json" }

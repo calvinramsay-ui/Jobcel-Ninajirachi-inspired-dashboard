@@ -61,3 +61,13 @@ const weatherWords = {
 }
 
 loadWeather();
+
+async function loadStock() {
+	const response = await fetch (`https://finnhub.io/api/v1/quote?symbol=AAPL&token=${FINNHUB_KEY}`);
+	const data = await response.json();
+console.log(data);
+const change = data.dp.toFixed(2);
+document.getElementById("stocks").textContent = `AAPL: ${change}%`; 
+}
+
+loadStock();
