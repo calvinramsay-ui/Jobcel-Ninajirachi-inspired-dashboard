@@ -33,6 +33,31 @@ async function loadWeather() {
 	const response = await fetch ("https://api.open-meteo.com/v1/forecast?latitude=42.30&longitude=-71.06&current=temperature_2m,weather_code&temperature_unit=fahrenheit");
 	const data = await response.json();
 console.log(data);
-document.getElementById("weather").textContent = data.current.temperature_2m;
+const temp = Math.round(data.current.temperature_2m);
+const words = weatherWords[data.current.weather_code] || "Unknown";
+document.getElementById("weather").textContent = `${temp}°F, ${words}`;
 }
+const weatherWords = {
+  0: "Clear",
+  1: "Mostly clear",
+  2: "Partly cloudy",
+  3: "Overcast",
+  45: "Foggy",
+  48: "Foggy",
+  51: "Light drizzle",
+  53: "Drizzle",
+  55: "Heavy drizzle",
+  61: "Light rain",
+  63: "Rain",
+  65: "Heavy rain",
+  71: "Light snow",
+  73: "Snow",
+  75: "Heavy snow",
+  80: "Showers",
+  81: "Showers",
+  82: "Heavy showers",
+  95: "Thunderstorm",
+
+}
+
 loadWeather();
