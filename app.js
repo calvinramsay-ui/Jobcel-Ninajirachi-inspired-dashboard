@@ -18,3 +18,13 @@ document.getElementById("counter").textContent = `${days} days, ${hours} hours, 
 
 updateCounter();
 setInterval(updateCounter, 1000); // re-run every 1000 ms, so it ticks every second
+
+
+async function loadGif() {
+	const response = await fetch("https:////nekos.best/api/v2/wave", {credentials: "include"});
+	const data = await response.json();
+	console.log(data);
+document.getElementById("gif").src = data.results[0].url;
+}
+
+loadGif();

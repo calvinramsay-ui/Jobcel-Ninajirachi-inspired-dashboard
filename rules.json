@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "origin", "operation": "remove" },
+        { "header": "user-agent", "operation": "set", "value": "CalvinDashboard/0.1 (https://github.com/calvinramsay-ui)" }
+      ]
+    },
+    "condition": {
+      "requestDomains": ["nekos.best"],
+      "resourceTypes": ["xmlhttprequest", "image"]
+    }
+  }
+]

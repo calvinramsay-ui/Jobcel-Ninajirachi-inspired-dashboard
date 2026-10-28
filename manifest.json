@@ -4,6 +4,13 @@
   "version": "0.1",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
-  }
+  },
+"permissions": ["declarativeNetRequest"],
+"host_permissions": ["https://nekos.best/*"],
+"declarative_net_request": {
+	"rule_resources": [
+{ "id": "nekos_rules", "enabled": true, "path": "rules.json" }
+]
+}
 }
 
