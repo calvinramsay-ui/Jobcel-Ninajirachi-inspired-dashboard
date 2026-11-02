@@ -180,6 +180,56 @@ body::after {
   line-height: 1;
   color: var(--cobalt);
 }
+/* ───────── animated weather icon ───────── */
+.weather-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.weather-icon { width: 104px; height: 104px; flex-shrink: 0; }
+.wx { width: 100%; height: 100%; overflow: visible; }
+.wx * { stroke: var(--cobalt); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.wx-sun circle { fill: #ffd98a; }
+.wx-rays { animation: wx-spin 14s linear infinite; transform-origin: 32px 32px; }
+.wx-sun circle { animation: wx-pulse 3s ease-in-out infinite; transform-origin: 32px 32px; }
+.wx-moon { fill: var(--lilac); animation: wx-bob 4s ease-in-out infinite; transform-origin: 32px 32px; }
+
+.wx-cloud { fill: var(--cream); }
+.wx-cloud.faint { fill: var(--pink); }
+.wx-cloud.dark  { fill: var(--lavender); }
+.wx-cloud.drift { animation: wx-drift 5s ease-in-out infinite; }
+.wx-cloud.slow  { animation-duration: 7s; animation-direction: reverse; }
+
+.wx-drop  { stroke: var(--cobalt); animation: wx-fall 0.9s linear infinite; opacity: 0; }
+.wx-flake { fill: var(--cream); animation: wx-snow 2.4s linear infinite; opacity: 0; }
+.wx-bolt  { fill: var(--led-text); animation: wx-flash 2.6s steps(1) infinite; }
+.wx-fog   { stroke: var(--lavender); stroke-width: 3; animation: wx-drift 4s ease-in-out infinite; }
+
+@keyframes wx-spin  { to { transform: rotate(360deg); } }
+@keyframes wx-pulse { 50% { transform: scale(1.08); } }
+@keyframes wx-bob   { 50% { transform: translateY(-3px) rotate(-4deg); } }
+@keyframes wx-drift { 50% { transform: translateX(4px); } }
+@keyframes wx-fall {
+  0%   { transform: translate(0, -6px); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translate(-2px, 8px); opacity: 0; }
+}
+@keyframes wx-snow {
+  0%   { transform: translate(0, -6px); opacity: 0; }
+  20%  { opacity: 1; }
+  50%  { transform: translate(3px, 1px); }
+  100% { transform: translate(-2px, 9px); opacity: 0; }
+}
+@keyframes wx-flash {
+  0%, 100% { opacity: 1; }
+  8%  { opacity: 0.15; }
+  12% { opacity: 1; }
+  16% { opacity: 0.15; }
+  20% { opacity: 1; }
+}
+
+/* people who've asked their OS for less motion get a still icon */
+@media (prefers-reduced-motion: reduce) {
+  .wx * { animation: none !important; opacity: 1 !important; }
+}
+
 .desc { font-weight: 700; font-size: 18px; margin: 6px 0 14px; }
 
 .gif-wrap {

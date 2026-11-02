@@ -38,13 +38,15 @@ document.getElementById("anime-name").textContent = data.results[0].anime_name;
 loadGif();
 
 async function loadWeather() {
-	const response = await fetch ("https://api.open-meteo.com/v1/forecast?latitude=42.30&longitude=-71.06&current=temperature_2m,weather_code&temperature_unit=fahrenheit");
+	const response = await fetch ("https://api.open-meteo.com/v1/forecast?latitude=42.30&longitude=-71.06&current=temperature_2m,weather_code,is_day&temperature_unit=fahrenheit");
 	const data = await response.json();
 console.log(data);
+const code = data.current.weather_code;
 const temp = Math.round(data.current.temperature_2m);
-const words = weatherWords[data.current.weather_code] || "Unknown";
+const words = weatherWords[code] || "Unknown";
 document.getElementById("weather-temp").textContent = `${temp}°F`;
 document.getElementById("weather-desc").textContent = words;
+document.getElementById("weather-icon").innerHTML = weatherIcon(weatherKind(code), data.current.is_day === 1);
 }
 const weatherWords = {
   0: "Clear",
@@ -56,17 +58,73 @@ const weatherWords = {
   51: "Light drizzle",
   53: "Drizzle",
   55: "Heavy drizzle",
+  56: "Freezing drizzle",
+  57: "Freezing drizzle",
   61: "Light rain",
   63: "Rain",
   65: "Heavy rain",
+  66: "Freezing rain",
+  67: "Freezing rain",
   71: "Light snow",
   73: "Snow",
   75: "Heavy snow",
+  77: "Snow grains",
   80: "Showers",
   81: "Showers",
   82: "Heavy showers",
+  85: "Snow showers",
+  86: "Snow showers",
   95: "Thunderstorm",
+  96: "Thunderstorm + hail",
+  99: "Thunderstorm + hail",
+}
 
+// Groups Open-Meteo's many weather codes into the handful of icons we draw.
+function weatherKind(code) {
+  if (code <= 1) return "clear";
+  if (code === 2) return "partly";
+  if (code === 3) return "cloudy";
+  if (code === 45 || code === 48) return "fog";
+  if (code >= 71 && code <= 77) return "snow";
+  if (code === 85 || code === 86) return "snow";
+  if (code >= 95) return "storm";
+  if (code >= 51) return "rain"; // drizzle, rain, freezing rain, showers
+  return "cloudy";
+}
+
+// Builds an animated SVG for the weather. All the motion lives in styles.css
+// (look for the .wx- classes); this just picks which pieces to draw.
+function weatherIcon(kind, isDay) {
+  const sun = `
+    <g class="wx-sun">
+      <g class="wx-rays">
+        ${[0, 45, 90, 135, 180, 225, 270, 315].map(a =>
+          `<line x1="32" y1="9" x2="32" y2="15" transform="rotate(${a} 32 32)"/>`).join("")}
+      </g>
+      <circle cx="32" cy="32" r="11"/>
+    </g>`;
+  const moon = `<path class="wx-moon" d="M38 14a18 18 0 1 0 12 30a14 14 0 0 1-12-30z"/>`;
+  const cloud = (cls = "") =>
+    `<path class="wx-cloud ${cls}" d="M20 50h26a9 9 0 0 0 0-18a13 13 0 0 0-25-3a10.5 10.5 0 0 0-1 21z"/>`;
+  const drops = [22, 32, 42].map((x, i) =>
+    `<line class="wx-drop" style="animation-delay:${i * 0.3}s" x1="${x}" y1="54" x2="${x - 2}" y2="60"/>`).join("");
+  const flakes = [22, 32, 42].map((x, i) =>
+    `<circle class="wx-flake" style="animation-delay:${i * 0.6}s" cx="${x}" cy="55" r="2"/>`).join("");
+  const bolt = `<path class="wx-bolt" d="M34 44l-6 10h6l-3 9 9-12h-6l4-7z"/>`;
+  const fog = [30, 38, 46, 54].map((y, i) =>
+    `<line class="wx-fog" style="animation-delay:${i * 0.4}s" x1="12" y1="${y}" x2="52" y2="${y}"/>`).join("");
+  const skyBody = isDay ? sun : moon;
+
+  const parts = {
+    clear:  skyBody,
+    partly: `<g transform="translate(-8 -8) scale(0.8)">${skyBody}</g>${cloud("drift")}`,
+    cloudy: `<g transform="translate(-10 -12) scale(0.7)">${cloud("drift slow faint")}</g>${cloud("drift")}`,
+    rain:   `<g transform="translate(0 -8)">${cloud()}</g>${drops}`,
+    snow:   `<g transform="translate(0 -8)">${cloud()}</g>${flakes}`,
+    storm:  `<g transform="translate(0 -12)">${cloud("dark")}</g>${bolt}`,
+    fog:    `<g transform="translate(0 -14)">${cloud("faint")}</g>${fog}`,
+  };
+  return `<svg viewBox="0 0 64 64" class="wx wx-${kind}">${parts[kind]}</svg>`;
 }
 
 loadWeather();
