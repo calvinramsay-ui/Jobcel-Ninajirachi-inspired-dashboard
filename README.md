@@ -1,7 +1,11 @@
 # Jobcel Ninajirachi-inspired dashboard
 
 A Chrome new-tab page made with a pastel cyberpunk / outrun look, inspired by
-Ninajirachi's *I Love My Computer*. Every new tab shows:
+Ninajirachi's *I Love My Computer*.
+
+![Screenshot of the dashboard](screenshot/dashboard.png)
+
+Every new tab shows:
 
 - **Jobless day counter**: days, hours, minutes and seconds since my last day of work, ticking live
 - **Weather**: the current temperature and conditions in Boston, with an animated icon that matches the weather (sun, moon, clouds, rain, snow, storm, fog)
