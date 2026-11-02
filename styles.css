@@ -221,23 +221,71 @@ body::after {
 @media (max-width: 700px) { #tracks { columns: 1; } }
 #tracks li {
   counter-increment: track;
-  display: grid;
-  grid-template-columns: 40px 1fr;
-  align-items: baseline;
-  padding: 7px 0;
+  display: flex;
+  align-items: center;
   border-bottom: 1px dashed rgba(195, 168, 242, 0.3);
   break-inside: avoid;
 }
-#tracks li::before {
+
+/* each row is a link: number | cover | song + artist | "open ↗" */
+.track-link {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 30px 44px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  align-items: center;
+  padding: 7px 8px 7px 0;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s, padding 0.2s;
+}
+.track-link::before {
   content: counter(track, decimal-leading-zero);
   grid-row: span 2;
   font-family: "Anton", sans-serif;
   font-size: 22px;
   color: var(--pink);
 }
-#tracks .song { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#tracks .artist { grid-column: 2; font-size: 12px; color: var(--lilac); }
-#tracks li:hover .song { color: var(--mint); }
+.track-link .art {
+  grid-row: span 2;
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  background: var(--cobalt);
+  border: 1px solid rgba(255, 244, 234, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.track-link .song { align-self: end; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-link .artist { grid-column: 3; align-self: start; font-size: 12px; color: var(--lilac); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.track-link .open {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+  font-family: "Silkscreen", monospace;
+  font-size: 11px;
+  color: var(--mint);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.track-link:hover, .track-link:focus-visible {
+  background: rgba(255, 244, 234, 0.06);
+  padding-left: 6px;
+  outline: none;
+}
+.track-link:focus-visible { box-shadow: inset 0 0 0 1px var(--mint); }
+.track-link:hover .song, .track-link:focus-visible .song { color: var(--mint); }
+.track-link:hover .art, .track-link:focus-visible .art { transform: scale(1.08) rotate(-2deg); box-shadow: 3px 3px 0 var(--pink); }
+.track-link:hover .open, .track-link:focus-visible .open { opacity: 1; transform: none; }
+
+/* album-color tint: JS sets --tint on the panel while a row is hovered */
+.tracks-panel {
+  background: color-mix(in srgb, var(--ink) 78%, var(--tint, var(--ink)));
+  box-shadow: 8px 8px 0 var(--tint, var(--cobalt));
+  transition: background 0.4s, box-shadow 0.4s;
+}
 
 /* ───────── LED stock ticker ───────── */
 .ticker {
@@ -341,7 +389,6 @@ body::after {
     grid-auto-flow: column;
     column-gap: 30px;
   }
-  #tracks li { align-content: center; padding: 0; }
   .gif-wrap { flex: 1; min-height: 0; }
   .gif-wrap img { width: 100%; height: 100%; min-height: 0; object-fit: cover; }
   .caption { flex: none; }
@@ -358,7 +405,9 @@ body::after {
   .counter { margin: 10px 0 6px; }
   .temp { font-size: 64px; }
   .desc { margin: 4px 0 8px; }
-  #tracks li::before { font-size: 18px; }
-  #tracks .song { font-size: 14px; }
-  #tracks .artist { font-size: 11px; }
+  .track-link { grid-template-columns: 26px 36px minmax(0, 1fr) auto; column-gap: 10px; padding-top: 4px; padding-bottom: 4px; }
+  .track-link::before { font-size: 18px; }
+  .track-link .art { width: 36px; height: 36px; }
+  .track-link .song { font-size: 14px; }
+  .track-link .artist { font-size: 11px; }
 }

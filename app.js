@@ -139,17 +139,76 @@ async function loadTracks() {
 
   loginButton.style.display = "none";
   list.replaceChildren();
+  const panel = document.querySelector(".tracks-panel");
+
   for (const track of data.items) {
     const li = document.createElement("li");
-    const artists = track.artists.map(a => a.name).join(", ");
+
+    // the whole row is a link that opens the track in Spotify
+    const link = document.createElement("a");
+    link.className = "track-link";
+    link.href = track.external_urls.spotify;
+    link.target = "_blank";
+    link.rel = "noopener";
+
+    // album cover (Spotify lists sizes big → small; the last one is ~64px)
+    const images = track.album.images;
+    const art = document.createElement("img");
+    art.className = "art";
+    art.alt = "";
+    art.crossOrigin = "anonymous"; // lets us read the pixels for the hover tint
+    if (images.length) art.src = images[images.length - 1].url;
+
     const song = document.createElement("span");
     song.className = "song";
     song.textContent = track.name;
     const artist = document.createElement("span");
     artist.className = "artist";
-    artist.textContent = artists;
-    li.append(song, artist);
+    artist.textContent = track.artists.map(a => a.name).join(", ");
+    const open = document.createElement("span");
+    open.className = "open";
+    open.textContent = "open ↗";
+
+    link.append(art, song, artist, open);
+    li.appendChild(link);
     list.appendChild(li);
+
+    // hovering (or tabbing to) a row tints the panel with that album's color
+    art.addEventListener("load", () => { link.dataset.tint = albumColor(art); }, { once: true });
+    const tint = () => link.dataset.tint && panel.style.setProperty("--tint", link.dataset.tint);
+    const untint = () => panel.style.removeProperty("--tint");
+    link.addEventListener("mouseenter", tint);
+    link.addEventListener("focus", tint);
+    link.addEventListener("mouseleave", untint);
+    link.addEventListener("blur", untint);
+  }
+}
+
+// Picks the most vivid color from an album cover by shrinking it to 10×10
+// and choosing the pixel with the best mix of saturation and brightness.
+// Returns "" for colorless covers so the panel stays as-is.
+function albumColor(img) {
+  try {
+    const size = 10;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, size, size);
+    const px = ctx.getImageData(0, 0, size, size).data;
+
+    let best = null, bestScore = -1, bestSat = 0;
+    for (let i = 0; i < px.length; i += 4) {
+      const r = px[i], g = px[i + 1], b = px[i + 2];
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      const saturation = max === 0 ? 0 : (max - min) / max;
+      const score = saturation * 0.7 + (max / 255) * 0.3;
+      if (score > bestScore) { bestScore = score; bestSat = saturation; best = [r, g, b]; }
+    }
+    // black & white / grey covers have no real color — keep the default look
+    if (bestSat < 0.25) return "";
+    return `rgb(${best.join(", ")})`;
+  } catch (err) {
+    return ""; // image couldn't be read; just skip the tint
   }
 }
 

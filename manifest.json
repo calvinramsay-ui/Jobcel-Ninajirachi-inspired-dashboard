@@ -6,7 +6,7 @@
     "newtab": "newtab.html"
   },
 "permissions": ["declarativeNetRequest", "identity"],
-"host_permissions": ["https://nekos.best/*","https://api.open-meteo.com/*","https://finnhub.io/*","https://accounts.spotify.com/*","https://api.spotify.com/*"],
+"host_permissions": ["https://nekos.best/*","https://api.open-meteo.com/*","https://finnhub.io/*","https://accounts.spotify.com/*","https://api.spotify.com/*","https://i.scdn.co/*"],
 "declarative_net_request": {
 	"rule_resources": [
 { "id": "nekos_rules", "enabled": true, "path": "rules.json" }
