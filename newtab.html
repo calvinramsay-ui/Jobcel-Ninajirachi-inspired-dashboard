@@ -1,26 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Jobless day counter</h1>
-  <p id="counter">loading...</p>
+  <!-- grain + ink-bleed filters used by the poster text -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="rough">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3"/>
+    </filter>
+  </svg>
 
-  <h2>xDDDD</h2>
-  <img id="gif" width="300">
-  <p id="anime-name"></p>
+  <header class="topbar">
+    <svg class="cat" viewBox="0 0 11 10" aria-hidden="true">
+      <path d="M0 0h1v1h-1zM4 0h1v1h-1zM0 1h1v1h-1zM1 1h1v1h-1zM3 1h1v1h-1zM4 1h1v1h-1zM0 2h1v1h-1zM1 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM4 3h1v1h-1zM0 4h1v1h-1zM1 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM10 4h1v1h-1zM1 5h1v1h-1zM2 5h1v1h-1zM3 5h1v1h-1zM10 5h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM9 6h1v1h-1zM1 7h1v1h-1zM2 7h1v1h-1zM3 7h1v1h-1zM4 7h1v1h-1zM5 7h1v1h-1zM6 7h1v1h-1zM7 7h1v1h-1zM8 7h1v1h-1zM1 8h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM1 9h1v1h-1zM3 9h1v1h-1zM6 9h1v1h-1zM8 9h1v1h-1z"/>
+    </svg>
+    <span class="pixel">calvin.sys</span>
+    <span class="pixel dim">// i love my computer</span>
+    <span class="pixel clock" id="clock"></span>
+  </header>
 
-  <h2>Top tracks</h2>
-  <button id="spotify-login">Connect Spotify</button>
-  <ol id="tracks"></ol>
+  <main class="grid">
+    <section class="panel poster counter-panel">
+      <h1 class="poster-title">Jobless day counter</h1>
+      <div class="counter" id="counter">
+        <div><span class="num" id="c-days">--</span><span class="unit">days</span></div>
+        <div><span class="num" id="c-hours">--</span><span class="unit">hrs</span></div>
+        <div><span class="num" id="c-minutes">--</span><span class="unit">min</span></div>
+        <div><span class="num" id="c-seconds">--</span><span class="unit">sec</span></div>
+      </div>
+      <p class="poster-foot">since 05.11.2026 ✦ 22:00 EST</p>
+      <span class="poster-jp" aria-hidden="true">自由時間</span>
+    </section>
 
-  <h3>weather</h3>
-  <p id="weather">loading...</p>
+    <section class="panel frame weather-panel">
+      <span class="jp-tag">天気</span>
+      <h3 class="label">weather</h3>
+      <p class="temp" id="weather-temp">--°</p>
+      <p class="desc" id="weather-desc">loading...</p>
+      <p class="pixel dim small">boston, ma</p>
+    </section>
 
-  <h4>bloomberg terminal</h4>
-  <p id="stocks">loading...</p>
+    <section class="panel frame gif-panel">
+      <span class="jp-tag">こんにちは</span>
+      <h2 class="label">xDDDD</h2>
+      <div class="gif-wrap"><img id="gif" alt=""></div>
+      <p class="caption" id="anime-name"></p>
+    </section>
+
+    <section class="panel ink tracks-panel">
+      <span class="jp-tag light">音楽</span>
+      <h2 class="label">Top tracks</h2>
+      <button id="spotify-login" class="pixel-btn">▶ connect spotify</button>
+      <ol id="tracks"></ol>
+    </section>
+  </main>
+
+  <section class="ticker" aria-label="bloomberg terminal">
+    <h4 class="ticker-tab">bloomberg terminal</h4>
+    <div class="ticker-window">
+      <div class="ticker-track" id="stocks"><span class="tick">loading...</span></div>
+    </div>
+  </section>
 
   <script src="config.js"></script>
   <script src="spotify.js"></script>

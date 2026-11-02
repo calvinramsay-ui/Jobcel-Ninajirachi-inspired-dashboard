@@ -12,8 +12,16 @@ const hours = Math.floor(msElapsed / (1000*60*60)) %24;
 const minutes = Math.floor(msElapsed / (1000*60)) %60;
 const seconds = Math.floor(msElapsed / (1000)) %60;
 
-document.getElementById("counter").textContent = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+const pad = n => String(n).padStart(2, "0");
+document.getElementById("c-days").textContent = days;
+document.getElementById("c-hours").textContent = pad(hours);
+document.getElementById("c-minutes").textContent = pad(minutes);
+document.getElementById("c-seconds").textContent = pad(seconds);
 
+// little clock in the top bar
+document.getElementById("clock").textContent = now.toLocaleString("en-US", {
+  weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+});
 }
 
 updateCounter();
@@ -35,7 +43,8 @@ async function loadWeather() {
 console.log(data);
 const temp = Math.round(data.current.temperature_2m);
 const words = weatherWords[data.current.weather_code] || "Unknown";
-document.getElementById("weather").textContent = `${temp}°F, ${words}`;
+document.getElementById("weather-temp").textContent = `${temp}°F`;
+document.getElementById("weather-desc").textContent = words;
 }
 const weatherWords = {
   0: "Clear",
@@ -79,8 +88,22 @@ console.log(results);
 
 results.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
 
-const lines = results.map(r => `${r.ticker}: ${r.change.toFixed(2)}%`);
-document.getElementById("stocks").innerHTML = lines.join("<br>");
+// build LED ticker items, e.g. "NVDA ▲2.31%"
+const track = document.getElementById("stocks");
+track.replaceChildren();
+const makeTick = r => {
+  const span = document.createElement("span");
+  const up = r.change >= 0;
+  span.className = `tick ${up ? "up" : "down"}`;
+  span.textContent = `${r.ticker} ${up ? "▲" : "▼"}${Math.abs(r.change).toFixed(2)}%`;
+  return span;
+};
+// add the list twice so the scroll loops seamlessly
+for (let copy = 0; copy < 2; copy++) {
+  results.forEach(r => track.appendChild(makeTick(r)));
+}
+track.style.setProperty("--ticker-duration", `${results.length * 4}s`);
+track.classList.add("scrolling");
 }
 
 loadStocks();
@@ -119,7 +142,13 @@ async function loadTracks() {
   for (const track of data.items) {
     const li = document.createElement("li");
     const artists = track.artists.map(a => a.name).join(", ");
-    li.textContent = `${track.name} — ${artists}`;
+    const song = document.createElement("span");
+    song.className = "song";
+    song.textContent = track.name;
+    const artist = document.createElement("span");
+    artist.className = "artist";
+    artist.textContent = artists;
+    li.append(song, artist);
     list.appendChild(li);
   }
 }
