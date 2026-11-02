@@ -21,7 +21,7 @@ setInterval(updateCounter, 1000); // re-run every 1000 ms, so it ticks every sec
 
 
 async function loadGif() {
-	const response = await fetch("https://nekos.best/api/v2/wave", {credentials: "include"});
+	const response = await fetch("https://nekos.best/api/v2/wave");
 	const data = await response.json();
 	console.log(data);
 document.getElementById("gif").src = data.results[0].url;
@@ -70,7 +70,10 @@ async function loadStocks() {
 	for (const ticker of tickers) {
 	  const response = await fetch (`https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_KEY}`);
 	  const data = await response.json();
-	  results.push({ticker: ticker, change: data.dp });
+	  // Finnhub returns dp: null (or an error) for tickers it doesn't cover — skip those
+	  if (typeof data.dp === "number") {
+	    results.push({ticker: ticker, change: data.dp });
+	  }
 }
 console.log(results);
 
@@ -81,3 +84,44 @@ document.getElementById("stocks").innerHTML = lines.join("<br>");
 }
 
 loadStocks();
+
+document.getElementById("spotify-login").addEventListener("click", async () => {
+  try {
+    await spotifyLogin();
+    loadTracks();
+  } catch (err) {
+    console.error(err);
+    document.getElementById("tracks").textContent = `Spotify login failed: ${err.message}`;
+  }
+});
+
+async function loadTracks() {
+  const token = await getAccessToken();
+  const loginButton = document.getElementById("spotify-login");
+  const list = document.getElementById("tracks");
+  if (!token) {
+    loginButton.style.display = ""; // not logged in yet
+    return;
+  }
+  const response = await fetch("https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=short_term", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await response.json();
+  console.log(data);
+
+  if (!response.ok) {
+    list.textContent = `Spotify error: ${data.error?.message || response.status}`;
+    return;
+  }
+
+  loginButton.style.display = "none";
+  list.replaceChildren();
+  for (const track of data.items) {
+    const li = document.createElement("li");
+    const artists = track.artists.map(a => a.name).join(", ");
+    li.textContent = `${track.name} — ${artists}`;
+    list.appendChild(li);
+  }
+}
+
+loadTracks();

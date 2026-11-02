@@ -5,8 +5,8 @@
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
-"permissions": ["declarativeNetRequest"],
-"host_permissions": ["https://nekos.best/*,"https://api.open-meteo.com/*,https://finnhub.io/*"],
+"permissions": ["declarativeNetRequest", "identity"],
+"host_permissions": ["https://nekos.best/*","https://api.open-meteo.com/*","https://finnhub.io/*","https://accounts.spotify.com/*","https://api.spotify.com/*"],
 "declarative_net_request": {
 	"rule_resources": [
 { "id": "nekos_rules", "enabled": true, "path": "rules.json" }
